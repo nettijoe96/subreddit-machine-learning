@@ -13,24 +13,29 @@ READ_MODE = "rb"
 """
 Load boardgames files into memory
 
-given number n, return a list of the first n stored boardgame comments
+given number n, return a list of the n stored boardgame comments
+
+optionally, take a start index to read boardgames from. 0 by default.
+
 """
-def load_boardgames(num_comments):
-    return __load_pickled_data(num_comments, BOARDGAMES_PICKLE_FILE)
+def load_boardgames(num_comments, start_index=0):
+    return __load_pickled_data(num_comments, BOARDGAMES_PICKLE_FILE, start_index)
     
 """
 Load videogames files into memory
 
 given number n, return a list of the first n stored videogames comments
+
+optionally, take a start index to read videogames from. 0 by default.
 """
-def load_videogames(num_comments):
-    return __load_pickled_data(num_comments, VIDEOGAMES_PICKLE_FILE)
+def load_videogames(num_comments, start_index=0):
+    return __load_pickled_data(num_comments, VIDEOGAMES_PICKLE_FILE, start_index)
     
     
 """
 Load pickled data into memory
 """
-def __load_pickled_data(num_items, pickle_file_name):
+def __load_pickled_data(num_items, pickle_file_name, start_index=0):
     pickle_file = open(pickle_file_name, READ_MODE)
     data_items = pickle.load(pickle_file)
     
@@ -43,7 +48,7 @@ def __load_pickled_data(num_items, pickle_file_name):
             
         raise ValueError(error_message)
     
-    output = data_items[0:num_items]
+    output = data_items[start_index:start_index+num_items]
     
     return output
     
