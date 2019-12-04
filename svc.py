@@ -6,7 +6,8 @@ training = 350
 
 #if a feature is used, it is True
 numberOfWordsFeature = False
-bagOfWordsFeature = True
+unstemmedBagOfWordsFeature = False
+stemmedBagOfWordsFeature = True
 bagOfWords = ["people", "game"]
 
 
@@ -40,7 +41,12 @@ def commentToFeatures(comment):
     features = []
     if numberOfWordsFeature: #TODO: make numberOfWords function
         pass
-    if bagOfWordsFeature:
+    if unstemmedBagOfWordsFeature:
+       stemmedComment = utility.stem_cleaned_comment(comment) 
+       stemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)
+       for stem in stemmedBagOfWords:
+           features += [int(isWordInComment(stemmedComment, stem))]
+    if stemmedBagOfWordsFeature:
        stemmedComment = utility.stem_cleaned_comment(comment) 
        stemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)
        for stem in stemmedBagOfWords:
