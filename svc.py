@@ -41,8 +41,10 @@ def commentToFeatures(comment):
     if numberOfWordsFeature: #TODO: make numberOfWords function
         pass
     if bagOfWordsFeature:
-       for word in bagOfWords:
-           features += [int(isWordInComment(comment, word))]
+       stemmedComment = utility.stem_cleaned_comment(comment) 
+       stemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)
+       for stem in stemmedBagOfWords:
+           features += [int(isWordInComment(stemmedComment, stem))]
     return features
 
 
