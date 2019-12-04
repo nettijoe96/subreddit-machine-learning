@@ -2,6 +2,7 @@
 #nltk.download("stopwords")
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+from nltk.stem import SnowballStemmer
 import string
 import pickle
 
@@ -76,9 +77,9 @@ def cleanComment(comment: str):
     
 
 def stem_cleaned_comment(words):
-    stemmer = PorterStemmer()
+    stemmer = SnowballStemmer("english")
     #applies the porter stemmer's stem function to the full list of words
-    stemmed_comment = list(map(stemmer.stem,words))
+    stemmed_comments = list(map(stemmer.stem,words))
     return stemmed_comments
 
 
