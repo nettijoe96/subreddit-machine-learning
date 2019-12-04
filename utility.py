@@ -1,6 +1,7 @@
 #import nltk
 #nltk.download("stopwords")
 from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 import string
 import pickle
 
@@ -72,35 +73,43 @@ def cleanComment(comment: str):
             words.pop(i)
 
     return words
+    
+
+def stem_cleaned_comment(words):
+    stemmer = PorterStemmer()
+    #applies the porter stemmer's stem function to the full list of words
+    stemmed_comment = list(map(stemmer.stem,words))
+    return stemmed_comments
 
 
-#note - code here duplicated in bag_of_words() now. If this function is changed,
-#consider refactoring
-def wordFreq(commentObjs):
+def wordFreq(commentObjs, cleaningOperation=cleanComment):
     freqDict = {}
     for commentObj in commentObjs:
-        commentWords = cleanComment(commentObj.body)
-        for word in commentWords:
+        comment_words = bag_of_words(commentObj, cleaningOperation)
+        for word in comment_words.keys():
             if word in freqDict:
-                freqDict[word] += 1
+                freqDict[word] += comment_words[word]
             else:
-                freqDict[word] = 1
+                freqDict[word] = comment_words[word]
     return freqDict
     
     
-#note - code here duplicated in wordFreq() now. If this function is changed,
-#consider refactoring
 """
-Given a comment, return a bag of words (a dictionary with words as keys and 
-their frequencies in the comment represented as integer values)
+Given a comment and a cleaning operation, return a bag of words (a dictionary 
+with words as keys and their frequencies in the comment represented as integer 
+values)
+
+cleaning_operation is expected to take string values and output the cleaned data
+as a list of tokenized words.
 """
-def bag_of_words(commentObj):
-    commentWords = cleanComment(commentObj.body)
-        for word in commentWords:
-            if word in freqDict:
-                freqDict[word] += 1
-            else:
-                freqDict[word] = 1
+def bag_of_words(comment_obj, cleaning_operation=cleanComment):
+    freqDict = {}
+    commentWords = cleaning_operation(comment_obj.body)
+    for word in commentWords:
+        if word in freqDict:
+            freqDict[word] += 1
+        else:
+            freqDict[word] = 1
     return freqDict
  
 
