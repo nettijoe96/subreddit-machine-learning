@@ -74,7 +74,8 @@ def cleanComment(comment: str):
     return words
 
 
-
+#note - code here duplicated in bag_of_words() now. If this function is changed,
+#consider refactoring
 def wordFreq(commentObjs):
     freqDict = {}
     for commentObj in commentObjs:
@@ -85,4 +86,21 @@ def wordFreq(commentObjs):
             else:
                 freqDict[word] = 1
     return freqDict
+    
+    
+#note - code here duplicated in wordFreq() now. If this function is changed,
+#consider refactoring
+"""
+Given a comment, return a bag of words (a dictionary with words as keys and 
+their frequencies in the comment represented as integer values)
+"""
+def bag_of_words(commentObj):
+    commentWords = cleanComment(commentObj.body)
+        for word in commentWords:
+            if word in freqDict:
+                freqDict[word] += 1
+            else:
+                freqDict[word] = 1
+    return freqDict
+ 
 
