@@ -1,4 +1,5 @@
 from sklearn import svm
+from sklearn import ensemble
 import utility
 
 
@@ -33,12 +34,12 @@ def commentToFeatures(words, bagOfWords):
        unstemmedComment = utility.stem_cleaned_comment(words) 
        unstemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)
        for stem in stemmedBagOfWords:
-           features += [int(isWordInComment(unstemmedComment, stem))]
+           features += [int(unstemmedComment.count(stem))]
     if stemmedBagOfWordsFeature:
        stemmedComment = utility.stem_cleaned_comment(words) 
        stemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)
        for stem in stemmedBagOfWords:
-           features += [int(isWordInComment(stemmedComment, stem))]
+           features += [int(stemmedComment.count(stem))]
     return features
 
 
@@ -52,5 +53,13 @@ creates the svc model.
 """
 def newSVCModel():
     model = svm.SVC(gamma="auto");
+    return model
+    
+"""
+creates the random forest model. 
+
+"""
+def newRandomForestModel():
+    model = ensemble.RandomForestClassifier(n_estimators= 1000, random_state = 1);
     return model
 
