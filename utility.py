@@ -3,6 +3,7 @@
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.stem import SnowballStemmer
+import itertools
 import string
 import pickle
 
@@ -54,8 +55,8 @@ def __load_pickled_data(num_items, pickle_file_name, start_index=0):
     
 
 
-#class CommentFeatures:
-    
+def permuations(elements):
+    return list(itertools.permutations(elements))
 
 
 def cleanComment(comment: str):

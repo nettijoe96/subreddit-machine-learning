@@ -5,16 +5,23 @@ import utility
 training = 350
 
 #if a feature is used, it is True
-numberOfWordsFeature = False
+numberOfWordsFeature = True
 unstemmedBagOfWordsFeature = False
 stemmedBagOfWordsFeature = True
-bagOfWords = ["people", "game"]
 
 
-def getTrainedModel():
+
+def main():
     boardComments = getRawComments(utility.load_boardgames(training))
     videoComments = getRawComments(utility.load_videogames(training))
-    features = genFeatures(boardComments) + genFeatures(videoComments)
+    bagOfWords = ["play", "board", "soul", "people"]  
+    perms = utility.permuations(bagOfWords)
+    for bag in perms:
+        model = getTrainedModel(boardComments, videoComments, bag)
+
+
+def getTrainedModel(boardComments, videoComments, bagOfWords):
+    features = genFeatures(boardComments, bagOfWords) + genFeatures(videoComments, bagOfWords)
     labels = genLabels("board", len(boardComments)) + genLabels("video", len(videoComments))
     model = createModel(features, labels)     
     return model
@@ -31,14 +38,14 @@ def genLabels(label, num):
     return [label for i in range(0, num)] 
 
 
-def genFeatures(comments):
+def genFeatures(comments, bagOfWords):
     samples = []
     for c in comments:
-        samples += [commentToFeatures(c)] 
+        samples += [commentToFeatures(c, bagOfWords)] 
     return samples 
 
 
-def commentToFeatures(words):
+def commentToFeatures(words, bagOfWords):
     features = []
     if numberOfWordsFeature:
        features += [len(words)]
