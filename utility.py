@@ -1,6 +1,8 @@
 #import nltk
 #nltk.download("stopwords")
-from nltk.corpus import stopwords
+#nltk.download('words')
+
+import nltk.corpus as corpus
 from nltk.stem import PorterStemmer
 from nltk.stem import SnowballStemmer
 import itertools
@@ -52,7 +54,6 @@ def __load_pickled_data(num_items, pickle_file_name, start_index=0):
     output = data_items[start_index:start_index+num_items]
     
     return output
-    
 
 
 def subsets(elements):
@@ -68,7 +69,27 @@ def subsets(elements):
         lsts += [lst] 
 
     return lsts
- 
+
+
+def makeEnglishDict():
+    english_vocab = set(w.lower() for w in corpus.words.words())
+    englishDict = {}
+    for word in english_vocab:
+        englishDict[word] = True
+    return englishDict 
+
+
+def isEnglishWord(englishDict, word):
+    return word.lower() in englishDict
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
 
 def getRawComments(comments):
     raw = []
@@ -84,7 +105,7 @@ def cleanComment(comment: str):
     comment = comment.replace("\n", "")
     comment = comment.replace("\n", "")
     words = comment.split(" ") 
-    stopWords = stopwords.words('english')
+    stopWords = corpus.stopwords.words('english')
     for sw in stopWords:
         try: 
             i = words.index(sw)

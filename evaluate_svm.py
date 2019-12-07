@@ -1,6 +1,11 @@
 import svc
 import utility
 from sklearn import metrics
+import data_exploration
+import pickle
+
+
+confMatrixFile = "confMatrixFile.pickle"
 
 feature_words = [
     "people",
@@ -76,22 +81,59 @@ def confusion_matrix(evaluation_label, actual_labels, classifier_labels):
     
     return (true_positives,true_negatives,false_positives,false_negatives)
     
+
+
+"""
+"""
+def getWordsFromDiff(minDiff, sortedDiffList):
+    for i in range(0, len(sortedDiffList)):
+        if sortedDiffList[i][1] < minDiff:
+            return sortedDiffList[0:i]
+
+    return sortedDiffList[0:len(sortedDiffList)]
+
 """
 given a list of words, boardgame training data, and videogame training data,
 run a model for each permutation of the list of words
 """
 def run_models(bagOfWords,boardgame_training_data,videogame_training_data):
-
     models_list = list()
     boardComments = utility.getRawComments(boardgame_training_data)
     videoComments = utility.getRawComments(videogame_training_data)
     labels = svc.genLabels("board", len(boardComments)) + svc.genLabels("video", len(videoComments))
-    perms = utility.permuations(bagOfWords)       #get permuations of bag of words
-    for bag in perms:
-        svc_model = svc.newSVCModel()
-        features = svc.genFeatures(boardComments, bag) + svc.genFeatures(videoComments, bag)
-        model = svc.trainModel(svc_model, features, labels, bag)
-        evaluate_model(model, boardgame_testing_comments, videogame_testing_comments, bag)
+    minDiff = 1
+    sortedDiffList = data_exploration.getWordDiffs(minDiff)
+    topDiff = sortedDiffList[0][1]
+    lstConfMatrices = []
+    confMatrix = ()
+    prevBagOfWords = []
+    for d in range(0, topDiff):
+        shortenedDiffList = getWordsFromDiff(d, sortedDiffList)
+        bagOfWords = [shortenedDiffList[i][0] for i in range(0, len(shortenedDiffList))]
+        if bagOfWords == prevBagOfWords:
+            lstConfMatrices +=  [confMatrix]
+        else:
+            svc_model = svc.newSVCModel()
+            features = svc.genFeatures(boardComments, bagOfWords) + svc.genFeatures(videoComments, bagOfWords)
+            model = svc.trainModel(svc_model, features, labels, bagOfWords)
+            confMatrix = [evaluate_model(model, boardgame_testing_comments, videogame_testing_comments, bagOfWords)]
+            lstConfMatrices += [confMatrix] 
+        saveConfMatrices(lstConfMatrices, confMatrixFile)
+
+    #**old stuff**
+    #perms = utility.subsets(bagOfWords)       #get permuations of bag of words
+    #print(len(perms))
+    #for bag in perms:
+    #    svc_model = svc.newSVCModel()
+    #    features = svc.genFeatures(boardComments, bag) + svc.genFeatures(videoComments, bag)
+    #    model = svc.trainModel(svc_model, features, labels, bag)
+    #    evaluate_model(model, boardgame_testing_comments, videogame_testing_comments, bag)
+
+
+def saveConfMatrices(lstConfMatrices, filename):
+    f = open(filename, "wb")
+    pickle.dump(lstConfMatrices, f)     
+
         
 """
 given a model, boardgame testing data, and videogame testing data, evaluates the
@@ -123,6 +165,9 @@ def evaluate_model(model, boardgame_testing_data, videogame_testing_data, bag_of
     print("video recall " + str(video_recall))
     print("video precision " + str(video_precision))
     
+    return (board_conf, video_conf)
+
+
 def main():
     run_models(feature_words,boardgame_training_comments,videogame_training_comments)
 
