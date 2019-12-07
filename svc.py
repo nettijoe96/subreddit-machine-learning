@@ -9,15 +9,7 @@ numberOfWordsFeature = True
 unstemmedBagOfWordsFeature = False
 stemmedBagOfWordsFeature = True
 
-
-
-def main():
-    boardComments = getRawComments(utility.load_boardgames(training))
-    videoComments = getRawComments(utility.load_videogames(training))
-    bagOfWords = ["play", "board", "soul", "people"]  
-    perms = utility.permuations(bagOfWords)
-    for bag in perms:
-        model = getTrainedModel(boardComments, videoComments, bag)
+    
 
 
 def getTrainedModel(boardComments, videoComments, bagOfWords):
