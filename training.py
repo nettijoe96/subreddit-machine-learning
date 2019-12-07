@@ -1,4 +1,5 @@
 from sklearn import svm
+from sklearn import ensemble
 import utility
 
 
@@ -66,5 +67,13 @@ creates the svc model.
 """
 def newSVCModel():
     model = svm.SVC(gamma="auto");
+    return model
+    
+"""
+creates the random forest model. 
+
+"""
+def newRandomForestModel():
+    model = ensemble.RandomForestClassifier(n_estimators= 1000, random_state = 1);
     return model
 
