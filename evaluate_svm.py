@@ -9,7 +9,42 @@ positives, and false negatives) for the label classification is being evaluated
 for
 """
 def confusion_matrix(evaluation_label, actual_labels, classifier_labels):
-    
+    feature_words = [
+        "people",
+        "work",
+        "would",
+        "make",
+        "abuse",
+        "think",
+        "time",
+        "know",
+        "person",
+        "use",
+        "comment",
+        "say",
+        "read",
+        "post",
+        "remove",
+        "support",
+        "jr",
+        "someone",
+        "accuse",
+        "victoria",
+        "kind",
+        "made",
+        "design",
+        "see",
+        "victim",
+        "statement",
+        "believe",
+        "relationship",
+        "response",
+        "game",
+        "play",
+        "soul",
+        "2",
+        "3",
+        "fun"]
     true_positives = 0
     true_negatives = 0
     false_positives = 0
