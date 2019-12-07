@@ -130,11 +130,14 @@ def evaluate_model(model, boardgame_testing_data, videogame_testing_data, bag_of
 
     board_recall = board_conf[0]/(board_conf[0] + board_conf[3])
     board_precision = board_conf[0]/(board_conf[0] + board_conf[2])
-
-    print("board recall " + str(board_recall))
-    print("board precision " + str(board_precision))
-    print("video recall " + str(video_recall))
-    print("video precision " + str(video_precision))
+    accuracy = calcAccuracy(board_conf)
+    
+    print("results: ")
+    print("boardgame recall: " + str(board_recall))
+    print("boardgame precision: " + str(board_precision))
+    print("videogame recall: " + str(video_recall))
+    print("videogame precision: " + str(video_precision))
+    print("accuracy: " + str(accuracy))
     
     return (board_conf, video_conf)
 
@@ -145,6 +148,8 @@ def calcRecall(confMatrix):
 def calcPrecision(confMatrix):
     return confMatrix[0]/(confMatrix[0] + confMatrix[2])
 
+def calcAccuracy(confMatrix):
+    return (confMatrix[0] + confMatrix[1])/(confMatrix[0] + confMatrix[1] + confMatrix[2] + confMatrix[3])
 
 def main():
     modelName = input("svc or forest?\n").lower()
