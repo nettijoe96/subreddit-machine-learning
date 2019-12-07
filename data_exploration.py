@@ -8,6 +8,8 @@ dev = 175
 testing = 175
 
 
+englishDict = utility.makeEnglishDict()
+
 #some rudimentary feature selection stuff is below
 
 
@@ -24,9 +26,12 @@ def getWordDiffs(minDiff):
     #print(calc_avg_wordcount(boardComments))
     #print("avg wordcount in boardgames:")
     #print(calc_avg_wordcount(videoComments))
+    #print("avg non-english in boardgames:")
+    #print(calc_avg_non_english_words(boardComments))
+    #print("avg non-english in videogames:")
+    #print(calc_avg_non_english_words(videoComments))
     fullDiff = boardDiff + videoDiff
     fullDiffSorted = sorted(fullDiff, key=operator.itemgetter(1), reverse=1)
-    print(fullDiffSorted)
     return fullDiffSorted
 
 
@@ -72,5 +77,9 @@ def calc_avg_wordcount(comments_list):
     wordcounts = list(map(len,tokenized_comments))
     return statistics.mean(wordcounts)
     
-
+def calc_avg_non_english_words(comments_list):
+    comment_bodies = list(map(lambda x: x.body,comments_list))
+    commments = list(map(utility.cleanComment,comment_bodies))
+    avg = sum([utility.avgNonEnglishWordsOrNumbers(englishDict, c) for c in commments])/len(commments)
+    return avg 
 

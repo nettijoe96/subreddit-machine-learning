@@ -71,6 +71,25 @@ def subsets(elements):
     return lsts
 
 
+def allEnglishWordsOrNumbers(englishDict, words):
+    for word in words:
+        if not isEnglishWord(englishDict, word) and not is_number(word):
+            return False
+        
+    return True
+
+def avgNonEnglishWordsOrNumbers(englishDict, words):
+    num = 0
+    for word in words:
+        if not isEnglishWord(englishDict, word) and not is_number(word):
+            num += 1
+        
+    if num == 0:
+        return 0
+    else:
+        return num/len(words)
+
+
 def makeEnglishDict():
     english_vocab = set(w.lower() for w in corpus.words.words())
     englishDict = {}

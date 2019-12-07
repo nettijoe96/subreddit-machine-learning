@@ -7,42 +7,6 @@ import pickle
 
 confMatrixFile = "confMatrixFile.pickle"
 
-feature_words = [
-    "people",
-    "work",
-    "would",
-    "make",
-    "abuse",
-    "think",
-    "time",
-    "know",
-    "person",
-    "use",
-    "comment",
-    "say",
-    "read",
-    "post",
-    "remove",
-    "support",
-    "jr",
-    "someone",
-    "accuse",
-    "victoria",
-    "kind",
-    "made",
-    "design",
-    "see",
-    "victim",
-    "statement",
-    "believe",
-    "relationship",
-    "response",
-    "game",
-    "play",
-    "soul",
-    "2",
-    "3",
-    "fun"]   
 number_of_testing_comments = 150
 number_of_training_comments = 350
 boardgame_training_comments = utility.load_boardgames(number_of_training_comments)
@@ -51,7 +15,11 @@ boardgame_testing_comments = utility.load_boardgames(number_of_testing_comments,
     number_of_training_comments)
 videogame_testing_comments = utility.load_videogames(number_of_testing_comments,
     number_of_training_comments)
-    
+
+#the optimal thresholds for bag of words differences gathered from experiment
+optimalMinDiffSVC = 27     
+optimalMinDiffForest = 3   
+
 """
 given a label to evaluate, list of actual labels and a list of labels applied by 
 a classifier, return a tuple of (true positives, true negatives, false 
@@ -83,8 +51,6 @@ def confusion_matrix(evaluation_label, actual_labels, classifier_labels):
     
 
 
-"""
-"""
 def getWordsFromDiff(minDiff, sortedDiffList):
     for i in range(0, len(sortedDiffList)):
         if sortedDiffList[i][1] < minDiff:
@@ -96,7 +62,7 @@ def getWordsFromDiff(minDiff, sortedDiffList):
 given a list of words, boardgame training data, and videogame training data,
 run a model for each permutation of the list of words
 """
-def run_models(bagOfWords,boardgame_training_data,videogame_training_data):
+def run_models(model, bagOfWords,boardgame_training_data,videogame_training_data):
     models_list = list()
     boardComments = utility.getRawComments(boardgame_training_data)
     videoComments = utility.getRawComments(videogame_training_data)
@@ -113,21 +79,26 @@ def run_models(bagOfWords,boardgame_training_data,videogame_training_data):
         if bagOfWords == prevBagOfWords:
             lstConfMatrices +=  [confMatrix]
         else:
-            svc_model = training.newSVCModel()
             features = training.genFeatures(boardComments, bagOfWords) + training.genFeatures(videoComments, bagOfWords)
-            model = training.trainModel(svc_model, features, labels, bagOfWords)
+            model = training.trainModel(model, features, labels, bagOfWords)
             confMatrix = [evaluate_model(model, boardgame_testing_comments, videogame_testing_comments, bagOfWords)]
             lstConfMatrices += [confMatrix] 
         saveConfMatrices(lstConfMatrices, confMatrixFile)
 
-    #**old stuff**
-    #perms = utility.subsets(bagOfWords)       #get permuations of bag of words
-    #print(len(perms))
-    #for bag in perms:
-    #    svc_model = svc.newSVCModel()
-    #    features = svc.genFeatures(boardComments, bag) + svc.genFeatures(videoComments, bag)
-    #    model = svc.trainModel(svc_model, features, labels, bag)
-    #    evaluate_model(model, boardgame_testing_comments, videogame_testing_comments, bag)
+
+def run_model(model, optimalMinDiff, boardgame_training_data, videogame_training_data):
+    models_list = list()
+    boardComments = utility.getRawComments(boardgame_training_data)
+    videoComments = utility.getRawComments(videogame_training_data)
+    labels = training.genLabels("board", len(boardComments)) + training.genLabels("video", len(videoComments))
+    sortedDiffList = data_exploration.getWordDiffs(optimalMinDiff)
+    shortenedDiffList = getWordsFromDiff(optimalMinDiff, sortedDiffList)
+    bagOfWords = [shortenedDiffList[i][0] for i in range(0, len(shortenedDiffList))]
+
+    features = training.genFeatures(boardComments, bagOfWords) + training.genFeatures(videoComments, bagOfWords)
+    model = training.trainModel(model, features, labels, bagOfWords)
+    evaluate_model(model, boardgame_testing_comments, videogame_testing_comments, bagOfWords)
+
 
 
 def saveConfMatrices(lstConfMatrices, filename):
@@ -147,9 +118,9 @@ def evaluate_model(model, boardgame_testing_data, videogame_testing_data, bag_of
 
     classifier_labels = model.predict(features)
     
-    print("words in the bag of words: " + str(bag_of_words_words))
-    print("num of classified labels: " + str(len(classifier_labels)))
-    print("num of actual labels: " + str(len(actual_labels)))
+    #print("words in the bag of words: " + str(bag_of_words_words))
+    #print("num of classified labels: " + str(len(classifier_labels)))
+    #print("num of actual labels: " + str(len(actual_labels)))
 
     video_conf = confusion_matrix("video",actual_labels, classifier_labels)
     board_conf = confusion_matrix("board",actual_labels, classifier_labels)
@@ -176,7 +147,17 @@ def calcPrecision(confMatrix):
 
 
 def main():
-    run_models(feature_words,boardgame_training_comments,videogame_training_comments)
+    modelName = input("svc or forest?\n").lower()
+    if modelName != "svc" and modelName != "forest":
+        print("not an appropriate model. Either svc or forest")
+    elif modelName == "svc":
+        model = training.newSVCModel()
+        run_model(model, optimalMinDiffSVC, boardgame_training_comments,videogame_training_comments)
+    elif modelName == "forest":
+        model = training.newRandomForestModel()
+        run_model(model, optimalMinDiffForest, boardgame_training_comments,videogame_training_comments)
+
+    #run_models(model, feature_words,boardgame_training_comments,videogame_training_comments)
 
 
 if __name__ == "__main__":

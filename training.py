@@ -9,13 +9,22 @@ training = 350
 numberOfWordsFeature = True
 unstemmedBagOfWordsFeature = False
 stemmedBagOfWordsFeature = True
-wordsInDictionary = False
+wordsInDictionaryFeature = False
 englishDict = utility.makeEnglishDict()
 
 
 def trainModel(model, features, labels, bagOfWords):
+    printFeatures()
     model = model.fit(features,labels)
     return model
+
+
+def printFeatures():
+    print("features for the model:")
+    print("numberOfWordsFeature: ", numberOfWordsFeature)
+    print("unstemmedBagOfWordsFeature: ", unstemmedBagOfWordsFeature)
+    print("stemmedBagOfWordsFeature: ", stemmedBagOfWordsFeature)
+    print("wordsInDictionaryFeature: ", wordsInDictionaryFeature)
 
 
 def genLabels(label, num):
@@ -29,11 +38,11 @@ def genFeatures(comments, bagOfWords):
     return samples 
 
 
-
 def commentToFeatures(words, bagOfWords):
     features = []
-    if wordsInDictionary:
-        features += [int(allEnglishWordsOrNumbers(words))]
+    if wordsInDictionaryFeature:
+        features += [utility.avgNonEnglishWordsOrNumbers(englishDict, words)]
+        #features += [int(utility.allEnglishWordsOrNumbers(englishDict, words))]
     if numberOfWordsFeature:
        features += [len(words)]
     if unstemmedBagOfWordsFeature:
@@ -52,13 +61,6 @@ def commentToFeatures(words, bagOfWords):
 def isWordInComment(comment, word):
     return word in comment
 
-
-def allEnglishWordsOrNumbers(words):
-    for word in words:
-        if not utility.isEnglishWord(englishDict, word) and not utility.is_number(word):
-            return False
-        
-    return True
 
 
 """
