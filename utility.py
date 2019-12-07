@@ -59,6 +59,14 @@ def permuations(elements):
     return list(itertools.permutations(elements))
 
 
+
+def getRawComments(comments):
+    raw = []
+    for comment in comments:
+        raw += [cleanComment(comment.body)] 
+    return raw
+
+
 def cleanComment(comment: str):
     comment = comment.translate(str.maketrans('', '', string.punctuation))
     comment = comment.lower() # lower case

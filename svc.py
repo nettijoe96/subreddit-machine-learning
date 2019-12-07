@@ -9,21 +9,9 @@ numberOfWordsFeature = True
 unstemmedBagOfWordsFeature = False
 stemmedBagOfWordsFeature = True
 
-    
-
-
-def getTrainedModel(boardComments, videoComments, bagOfWords):
-    features = genFeatures(boardComments, bagOfWords) + genFeatures(videoComments, bagOfWords)
-    labels = genLabels("board", len(boardComments)) + genLabels("video", len(videoComments))
-    model = createModel(features, labels)     
+def trainModel(model, features, labels, bagOfWords):
+    model = model.fit(features,labels)
     return model
-
-
-def getRawComments(comments):
-    raw = []
-    for comment in comments:
-        raw += [utility.cleanComment(comment.body)] 
-    return raw
 
 
 def genLabels(label, num):
@@ -61,12 +49,8 @@ def isWordInComment(comment, word):
 """
 creates the svc model. 
 
-@param X: a list of features lists where each feature list is a sample
-@param Y: labels for each sample
-
 """
-def createModel(X, Y):
+def newSVCModel():
     model = svm.SVC(gamma="auto");
-    model.fit(X,Y)
     return model
 

@@ -83,26 +83,29 @@ run a model for each permutation of the list of words
 def run_models(bagOfWords,boardgame_training_data,videogame_training_data):
 
     models_list = list()
-    boardComments = getRawComments(utility.load_boardgames(training))
-    videoComments = getRawComments(utility.load_videogames(training))
-    bagOfWords = ["play", "board", "soul", "people"]  
-    perms = utility.permuations(bagOfWords)
+    boardComments = utility.getRawComments(boardgame_training_data)
+    videoComments = utility.getRawComments(videogame_training_data)
+    labels = svc.genLabels("board", len(boardComments)) + svc.genLabels("video", len(videoComments))
+    perms = utility.permuations(bagOfWords)       #get permuations of bag of words
     for bag in perms:
-        model = svc.getTrainedModel(boardComments, videoComments, bag)
-        evaluate_model(model, boardgame_testing_comments, videogame_testing_comments)
-
+        svc_model = svc.newSVCModel()
+        features = svc.genFeatures(boardComments, bag) + svc.genFeatures(videoComments, bag)
+        model = svc.trainModel(svc_model, features, labels, bag)
+        evaluate_model(model, boardgame_testing_comments, videogame_testing_comments, bag)
+        
 """
 given a model, boardgame testing data, and videogame testing data, evaluates the
 model
 """
-def evaluate_model(model, boardgame_testing_data, videogame_testing_data):
-    cleaned_boardgame_comments = svc.getRawComments(boardgame_testing_data)
-    cleaned_videogame_comments = svc.getRawComments(videogame_tsting_data)
-    features = svc.genFeatures(cleaned_boardgame_comments) + svc.genFeatures(cleaned_videogame_comments)
-    actual_labels = svc.genLabels("board", number_of_comments_chosen) + svc.genLabels("video", number_of_comments_chosen)
+def evaluate_model(model, boardgame_testing_data, videogame_testing_data, bag_of_words_words):
+    cleaned_boardgame_comments = utility.getRawComments(boardgame_testing_data)
+    cleaned_videogame_comments = utility.getRawComments(videogame_testing_data)
+    features = svc.genFeatures(cleaned_boardgame_comments, bag_of_words_words) + svc.genFeatures(cleaned_videogame_comments, bag_of_words_words)
+    actual_labels = svc.genLabels("board", number_of_testing_comments) + svc.genLabels("video", number_of_testing_comments)
 
     classifier_labels = model.predict(features)
-
+    
+    print("words in the bag of words: " + str(bag_of_words_words))
     print("num of classified labels: " + str(len(classifier_labels)))
     print("num of actual labels: " + str(len(actual_labels)))
 
