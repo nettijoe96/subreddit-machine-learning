@@ -9,6 +9,9 @@ training = 350
 numberOfWordsFeature = True
 unstemmedBagOfWordsFeature = False
 stemmedBagOfWordsFeature = True
+wordsInDictionary = False
+englishDict = utility.makeEnglishDict()
+
 
 def trainModel(model, features, labels, bagOfWords):
     model = model.fit(features,labels)
@@ -26,25 +29,36 @@ def genFeatures(comments, bagOfWords):
     return samples 
 
 
+
 def commentToFeatures(words, bagOfWords):
     features = []
+    if wordsInDictionary:
+        features += [int(allEnglishWordsOrNumbers(words))]
     if numberOfWordsFeature:
        features += [len(words)]
     if unstemmedBagOfWordsFeature:
-       unstemmedComment = utility.stem_cleaned_comment(words) 
-       unstemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)
-       for stem in stemmedBagOfWords:
-           features += [int(unstemmedComment.count(stem))]
+       unstemmedComment = words 
+       unstemmedBagOfWords = bagOfWords #right now bag of words is stemmed
+       for stem in unstemmedBagOfWords:
+           features += [int(isWordInComment(unstemmedComment, stem))]
     if stemmedBagOfWordsFeature:
        stemmedComment = utility.stem_cleaned_comment(words) 
-       stemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)
-       for stem in stemmedBagOfWords:
-           features += [int(stemmedComment.count(stem))]
+       #stemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)  //TODO: this may cause issues elsewhere
+       for stem in bagOfWords:
+           features += [int(isWordInComment(stemmedComment, stem))]
     return features
 
 
 def isWordInComment(comment, word):
     return word in comment
+
+
+def allEnglishWordsOrNumbers(words):
+    for word in words:
+        if not utility.isEnglishWord(englishDict, word) and not utility.is_number(word):
+            return False
+        
+    return True
 
 
 """
