@@ -37,17 +37,17 @@ def genFeatures(comments):
     return samples 
 
 
-def commentToFeatures(comment):
+def commentToFeatures(words):
     features = []
-    if numberOfWordsFeature: #TODO: make numberOfWords function
-        pass
+    if numberOfWordsFeature:
+       features += [len(words)]
     if unstemmedBagOfWordsFeature:
-       stemmedComment = utility.stem_cleaned_comment(comment) 
-       stemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)
+       unstemmedComment = utility.stem_cleaned_comment(words) 
+       unstemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)
        for stem in stemmedBagOfWords:
-           features += [int(isWordInComment(stemmedComment, stem))]
+           features += [int(isWordInComment(unstemmedComment, stem))]
     if stemmedBagOfWordsFeature:
-       stemmedComment = utility.stem_cleaned_comment(comment) 
+       stemmedComment = utility.stem_cleaned_comment(words) 
        stemmedBagOfWords = utility.stem_cleaned_comment(bagOfWords)
        for stem in stemmedBagOfWords:
            features += [int(isWordInComment(stemmedComment, stem))]
