@@ -7,13 +7,13 @@ import pickle
 
 confMatrixFile = "confMatrixFile.pickle"
 
-number_of_testing_comments = 150
+number_of_development_comments = 150
 number_of_training_comments = 350
 boardgame_training_comments = utility.load_boardgames(number_of_training_comments)
 videogame_training_comments = utility.load_videogames(number_of_training_comments)
-boardgame_testing_comments = utility.load_boardgames(number_of_testing_comments,
+boardgame_development_comments = utility.load_boardgames(number_of_development_comments,
     number_of_training_comments)
-videogame_testing_comments = utility.load_videogames(number_of_testing_comments,
+videogame_development_comments = utility.load_videogames(number_of_development_comments,
     number_of_training_comments)
 
 #the optimal thresholds for bag of words differences gathered from experiment
@@ -81,7 +81,7 @@ def run_models(model, bagOfWords,boardgame_training_data,videogame_training_data
         else:
             features = training.genFeatures(boardComments, bagOfWords) + training.genFeatures(videoComments, bagOfWords)
             model = training.trainModel(model, features, labels, bagOfWords)
-            confMatrix = [evaluate_model(model, boardgame_testing_comments, videogame_testing_comments, bagOfWords)]
+            confMatrix = [evaluate_model(model, boardgame_development_comments, videogame_development_comments, bagOfWords)]
             lstConfMatrices += [confMatrix] 
         saveConfMatrices(lstConfMatrices, confMatrixFile)
 
@@ -97,7 +97,7 @@ def run_model(model, optimalMinDiff, boardgame_training_data, videogame_training
 
     features = training.genFeatures(boardComments, bagOfWords) + training.genFeatures(videoComments, bagOfWords)
     model = training.trainModel(model, features, labels, bagOfWords)
-    evaluate_model(model, boardgame_testing_comments, videogame_testing_comments, bagOfWords)
+    evaluate_model(model, boardgame_development_comments, videogame_development_comments, bagOfWords)
 
 
 
@@ -107,14 +107,14 @@ def saveConfMatrices(lstConfMatrices, filename):
 
         
 """
-given a model, boardgame testing data, and videogame testing data, evaluates the
+given a model, boardgame development data, and videogame development data, evaluates the
 model
 """
-def evaluate_model(model, boardgame_testing_data, videogame_testing_data, bag_of_words_words):
-    cleaned_boardgame_comments = utility.getRawComments(boardgame_testing_data)
-    cleaned_videogame_comments = utility.getRawComments(videogame_testing_data)
+def evaluate_model(model, boardgame_development_data, videogame_development_data, bag_of_words_words):
+    cleaned_boardgame_comments = utility.getRawComments(boardgame_development_data)
+    cleaned_videogame_comments = utility.getRawComments(videogame_development_data)
     features = training.genFeatures(cleaned_boardgame_comments, bag_of_words_words) + training.genFeatures(cleaned_videogame_comments, bag_of_words_words)
-    actual_labels = training.genLabels("board", number_of_testing_comments) + training.genLabels("video", number_of_testing_comments)
+    actual_labels = training.genLabels("board", number_of_development_comments) + training.genLabels("video", number_of_development_comments)
 
     classifier_labels = model.predict(features)
     
