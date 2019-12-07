@@ -1,4 +1,4 @@
-import svc
+import training
 import utility
 from sklearn import metrics
 import data_exploration
@@ -100,7 +100,7 @@ def run_models(bagOfWords,boardgame_training_data,videogame_training_data):
     models_list = list()
     boardComments = utility.getRawComments(boardgame_training_data)
     videoComments = utility.getRawComments(videogame_training_data)
-    labels = svc.genLabels("board", len(boardComments)) + svc.genLabels("video", len(videoComments))
+    labels = training.genLabels("board", len(boardComments)) + training.genLabels("video", len(videoComments))
     minDiff = 1
     sortedDiffList = data_exploration.getWordDiffs(minDiff)
     topDiff = sortedDiffList[0][1]
@@ -113,9 +113,9 @@ def run_models(bagOfWords,boardgame_training_data,videogame_training_data):
         if bagOfWords == prevBagOfWords:
             lstConfMatrices +=  [confMatrix]
         else:
-            svc_model = svc.newSVCModel()
-            features = svc.genFeatures(boardComments, bagOfWords) + svc.genFeatures(videoComments, bagOfWords)
-            model = svc.trainModel(svc_model, features, labels, bagOfWords)
+            svc_model = training.newSVCModel()
+            features = training.genFeatures(boardComments, bagOfWords) + training.genFeatures(videoComments, bagOfWords)
+            model = training.trainModel(svc_model, features, labels, bagOfWords)
             confMatrix = [evaluate_model(model, boardgame_testing_comments, videogame_testing_comments, bagOfWords)]
             lstConfMatrices += [confMatrix] 
         saveConfMatrices(lstConfMatrices, confMatrixFile)
@@ -142,8 +142,8 @@ model
 def evaluate_model(model, boardgame_testing_data, videogame_testing_data, bag_of_words_words):
     cleaned_boardgame_comments = utility.getRawComments(boardgame_testing_data)
     cleaned_videogame_comments = utility.getRawComments(videogame_testing_data)
-    features = svc.genFeatures(cleaned_boardgame_comments, bag_of_words_words) + svc.genFeatures(cleaned_videogame_comments, bag_of_words_words)
-    actual_labels = svc.genLabels("board", number_of_testing_comments) + svc.genLabels("video", number_of_testing_comments)
+    features = training.genFeatures(cleaned_boardgame_comments, bag_of_words_words) + training.genFeatures(cleaned_videogame_comments, bag_of_words_words)
+    actual_labels = training.genLabels("board", number_of_testing_comments) + training.genLabels("video", number_of_testing_comments)
 
     classifier_labels = model.predict(features)
     
@@ -168,8 +168,17 @@ def evaluate_model(model, boardgame_testing_data, videogame_testing_data, bag_of
     return (board_conf, video_conf)
 
 
+def calcRecall(confMatrix):
+    return confMatrix[0]/(confMatrix[0] + confMatrix[3])
+    
+def calcPrecision(confMatrix):
+    return confMatrix[0]/(confMatrix[0] + confMatrix[2])
+
+
 def main():
     run_models(feature_words,boardgame_training_comments,videogame_training_comments)
 
-main()
+
+if __name__ == "__main__":
+    main()
 
