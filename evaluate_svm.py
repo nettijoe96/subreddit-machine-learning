@@ -52,18 +52,22 @@ classifier_labels = model.predict(features)
 print("num of classified labels: " + str(len(classifier_labels)))
 print("num of actual labels: " + str(len(actual_labels)))
 
-conf = confusion_matrix("video",actual_labels, classifier_labels)
-print(conf)
+video_conf = confusion_matrix("video",actual_labels, classifier_labels)
+board_conf = confusion_matrix("board",actual_labels, classifier_labels)
 
-recall = conf[0]/(conf[0] + conf[3])
-precision = conf[0]/(conf[0] + conf[2])
+video_recall = video_conf[0]/(video_conf[0] + video_conf[3])
+video_precision = video_conf[0]/(video_conf[0] + video_conf[2])
+
+board_recall = board_conf[0]/(board_conf[0] + board_conf[3])
+board_precision = board_conf[0]/(board_conf[0] + board_conf[2])
 
 #binary_actual_labels()
 
 #precision = metrics.precision_score(actual_labels,classifier_labels, ["board","video"], pos_label = 0, average = None)
 #recall = metrics.recall_score(actual_labels,classifier_labels, ["board","video"], pos_label = 0, average = None)
 
-print("recall " + str(recall))
-print("precision " + str(precision))
-
+print("board recall " + str(board_recall))
+print("board precision " + str(board_precision))
+print("video recall " + str(video_recall))
+print("video precision " + str(video_precision))
 
