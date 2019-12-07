@@ -1,5 +1,6 @@
 import svc
 import utility
+from sklearn import metrics
 
 """
 given a label to evaluate, list of actual labels and a list of labels applied by 
@@ -51,6 +52,18 @@ classifier_labels = model.predict(features)
 print("num of classified labels: " + str(len(classifier_labels)))
 print("num of actual labels: " + str(len(actual_labels)))
 
-conf = confusion_matrix("board",actual_labels, classifier_labels)
+conf = confusion_matrix("video",actual_labels, classifier_labels)
 print(conf)
+
+recall = conf[0]/(conf[0] + conf[3])
+precision = conf[0]/(conf[0] + conf[2])
+
+#binary_actual_labels()
+
+#precision = metrics.precision_score(actual_labels,classifier_labels, ["board","video"], pos_label = 0, average = None)
+#recall = metrics.recall_score(actual_labels,classifier_labels, ["board","video"], pos_label = 0, average = None)
+
+print("recall " + str(recall))
+print("precision " + str(precision))
+
 
