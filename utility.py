@@ -55,10 +55,20 @@ def __load_pickled_data(num_items, pickle_file_name, start_index=0):
     
 
 
-def permuations(elements):
-    return list(itertools.permutations(elements))
+def subsets(elements):
+    sets = []
+    for i in range(1, len(elements)+1):
+        sets += list(itertools.combinations(elements, i)) 
 
+    lsts = []
+    for s in sets:
+        lst = []
+        for e in s:
+            lst += [e] 
+        lsts += [lst] 
 
+    return lsts
+ 
 
 def getRawComments(comments):
     raw = []
