@@ -11,12 +11,13 @@ stemmedBagOfWordsFeature = True
 bagOfWords = ["people", "game"]
 
 
-def main():
+def getTrainedModel():
     boardComments = getRawComments(utility.load_boardgames(training))
     videoComments = getRawComments(utility.load_videogames(training))
     features = genFeatures(boardComments) + genFeatures(videoComments)
     labels = genLabels("board", len(boardComments)) + genLabels("video", len(videoComments))
     model = createModel(features, labels)     
+    return model
 
 
 def getRawComments(comments):
@@ -70,5 +71,3 @@ def createModel(X, Y):
     model.fit(X,Y)
     return model
 
-
-main()
