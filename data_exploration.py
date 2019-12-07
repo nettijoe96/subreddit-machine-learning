@@ -31,8 +31,9 @@ videoTup = sorted(videoDict.items(), key=operator.itemgetter(1), reverse=1)
 
 
 
+
 print("top boardgames words that are different from videogames")
-diff = 20
+diff = 5
 boardDiff = []
 for i in range(0, 50):
     word = boardTup[i][0]  
@@ -50,7 +51,7 @@ for w in boardDiff:
 
 print("top videogame words that are different from boardgames\n")
 videoDiff = []
-diff = 20
+diff = 5
 for i in range(0, 50):
     word = videoTup[i][0]  
     videoVal = videoTup[i][1]
