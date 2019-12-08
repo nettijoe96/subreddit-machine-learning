@@ -9,9 +9,11 @@ from matplotlib import pyplot as plt
 
 confMatrixFile = "confMatrixFile.pickle"
 
+#number of comments used in each phase
 number_of_testing_comments = 150
 number_of_development_comments = 150
 number_of_training_comments = 350
+
 boardgame_training_comments = utility.load_boardgames(number_of_training_comments)
 videogame_training_comments = utility.load_videogames(number_of_training_comments)
 boardgame_development_comments = utility.load_boardgames(number_of_development_comments,
@@ -55,7 +57,11 @@ def confusion_matrix(evaluation_label, actual_labels, classifier_labels):
     return (true_positives,true_negatives,false_positives,false_negatives)
     
 
-
+"""
+given a minimum difference in word counts and a list of tuples containing 
+(string, difference in count) sorted from highest to lowest difference, return 
+an array of strings with a difference in word count over the min
+"""
 def getWordsFromDiff(minDiff, sortedDiffList):
     for i in range(0, len(sortedDiffList)):
         if sortedDiffList[i][1] < minDiff:
@@ -90,7 +96,24 @@ def run_models(model, bagOfWords,boardgame_training_data,videogame_training_data
             lstConfMatrices += [confMatrix] 
         saveConfMatrices(lstConfMatrices, confMatrixFile)
 
-
+"""
+parameters:
+    model: the sklearn model being trained
+    optimalMinDiff: the minimum difference between number of occurences in the 
+        two training sets a word must have to be included in the model's bag of 
+        words features.
+    boardgame_training_data: a list of comments used to train the model (labeled
+        as class "board" for boardgame)
+    videogame_training_data: a list of comments used to train the model (labeled
+        as class "video" for videogame)
+    boardgame_eval_comments: a list of comments used to evaluate the model 
+        (labeled as class "board" for boardgame)
+    videogame_eval_comments: a list of comments used to evaluate the model 
+        (labeled as class "video" for videogame)
+        
+given the previously listed parameter: clean and process the input data, extract 
+its features, and use it to train and evaluate the input model.
+"""
 def run_model(model, optimalMinDiff, boardgame_training_data, videogame_training_data, boardgame_eval_comments, videogame_eval_comments):
     models_list = list()
     boardComments = utility.getRawComments(boardgame_training_data)
@@ -109,7 +132,11 @@ def run_model(model, optimalMinDiff, boardgame_training_data, videogame_training
     evaluate_model(model, boardgame_eval_comments, videogame_eval_comments, bagOfWords)
 
 
-
+"""
+given a list of raining set sizes, a list of training scores, and a list of
+lists of test scores, output a graph comparing the score on the training
+data to the score on the test data
+"""
 def graph_learning_curve(train_sizes, train_scores, test_scores):
     plt.title("learning curve")
     plt.xlabel("size of training set")
@@ -131,6 +158,10 @@ def graph_learning_curve(train_sizes, train_scores, test_scores):
                  label="Cross-validation score")
     plt.show()
 
+"""
+given a list of confusion matrices and a filename, pickle the configuration
+matrices and write them to the specified file to be loaded later
+"""
 def saveConfMatrices(lstConfMatrices, filename):
     f = open(filename, "wb")
     pickle.dump(lstConfMatrices, f)     
@@ -173,16 +204,31 @@ def evaluate_model(model, boardgame_eval_data, videogame_eval_data, bag_of_words
     
     return (board_conf, video_conf)
 
-
+"""
+give a confusion matrix, calculate recall
+"""
 def calcRecall(confMatrix):
     return confMatrix[0]/(confMatrix[0] + confMatrix[3])
-    
+ 
+"""
+give a confusion matrix, calculate precision
+""" 
 def calcPrecision(confMatrix):
     return confMatrix[0]/(confMatrix[0] + confMatrix[2])
 
+"""
+give a confusion matrix, calculate accuracy
+"""
 def calcAccuracy(confMatrix):
     return (confMatrix[0] + confMatrix[1])/(confMatrix[0] + confMatrix[1] + confMatrix[2] + confMatrix[3])
 
+"""
+provides the user options to run a random forest or support vector model on 
+either the training or test data
+
+prints precision and recall for the boardgame class and the videogame class, and
+prints overall accuracy (valid for both classes)
+"""
 def main():
     commentType = input("evaluation on dev or test comments?\n")
     if commentType != "dev" and commentType != "test":
