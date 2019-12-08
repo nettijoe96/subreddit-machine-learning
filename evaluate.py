@@ -1,9 +1,11 @@
 import training
 import utility
 from sklearn import metrics
+from sklearn.model_selection import learning_curve
 import data_exploration
 import pickle
-
+import numpy as np
+from matplotlib import pyplot as plt
 
 confMatrixFile = "confMatrixFile.pickle"
 
@@ -99,10 +101,35 @@ def run_model(model, optimalMinDiff, boardgame_training_data, videogame_training
     bagOfWords = [shortenedDiffList[i][0] for i in range(0, len(shortenedDiffList))]
 
     features = training.genFeatures(boardComments, bagOfWords) + training.genFeatures(videoComments, bagOfWords)
+
+    train_sizes, train_scores, test_scores = learning_curve(model, features, labels, train_sizes=[256, 361,466], cv=3)
+    #graph_learning_curve(train_sizes, train_scores, test_scores) //uncomment if you want learning curve
+
     model = training.trainModel(model, features, labels, bagOfWords)
     evaluate_model(model, boardgame_eval_comments, videogame_eval_comments, bagOfWords)
 
 
+
+def graph_learning_curve(train_sizes, train_scores, test_scores):
+    plt.title("learning curve")
+    plt.xlabel("size of training set")
+    plt.ylabel("score")
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+    plt.grid()
+    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                         train_scores_mean + train_scores_std, alpha=0.1,
+                         color="r")
+    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                         test_scores_mean + test_scores_std, alpha=0.1,
+                         color="g")
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+                 label="Training score")
+    plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+                 label="Cross-validation score")
+    plt.show()
 
 def saveConfMatrices(lstConfMatrices, filename):
     f = open(filename, "wb")
