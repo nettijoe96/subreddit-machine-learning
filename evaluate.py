@@ -186,7 +186,6 @@ def evaluate_model(model, boardgame_eval_data, videogame_eval_data, bag_of_words
     video_conf = confusion_matrix("video",actual_labels, classifier_labels)
     board_conf = confusion_matrix("board",actual_labels, classifier_labels)
    
-    print(video_conf, board_conf)
 
     video_recall = video_conf[0]/(video_conf[0] + video_conf[3])
     video_precision = video_conf[0]/(video_conf[0] + video_conf[2])

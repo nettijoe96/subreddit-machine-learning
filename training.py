@@ -32,7 +32,6 @@ prints active features
 def printFeatures():
     print("features for the model:")
     print("numberOfWordsFeature: ", numberOfWordsFeature)
-    print("unstemmedBagOfWordsFeature: ", unstemmedBagOfWordsFeature)
     print("stemmedBagOfWordsFeature: ", stemmedBagOfWordsFeature)
     print("wordsInDictionaryFeature: ", wordsInDictionaryFeature)
 
