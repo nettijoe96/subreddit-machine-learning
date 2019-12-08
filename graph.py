@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import pickle
 import evaluate
 
-filenameSVC = "confMatrixFile.pickle"
+filenameSVC = "confMatrixFile_svc.pickle"
 filenameForest = "confMatrixFile_Forest.pickle"
 
 def extractData(filename):
