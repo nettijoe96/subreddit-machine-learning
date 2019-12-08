@@ -7,6 +7,7 @@ import pickle
 
 confMatrixFile = "confMatrixFile.pickle"
 
+number_of_testing_comments = 150
 number_of_development_comments = 150
 number_of_training_comments = 350
 boardgame_training_comments = utility.load_boardgames(number_of_training_comments)
@@ -15,6 +16,8 @@ boardgame_development_comments = utility.load_boardgames(number_of_development_c
     number_of_training_comments)
 videogame_development_comments = utility.load_videogames(number_of_development_comments,
     number_of_training_comments)
+boardgame_testing_comments = utility.load_boardgames(number_of_testing_comments, number_of_training_comments + number_of_development_comments)
+videogame_testing_comments = utility.load_videogames(number_of_testing_comments, number_of_training_comments + number_of_development_comments)
 
 #the optimal thresholds for bag of words differences gathered from experiment
 optimalMinDiffSVC = 27     
@@ -86,7 +89,7 @@ def run_models(model, bagOfWords,boardgame_training_data,videogame_training_data
         saveConfMatrices(lstConfMatrices, confMatrixFile)
 
 
-def run_model(model, optimalMinDiff, boardgame_training_data, videogame_training_data):
+def run_model(model, optimalMinDiff, boardgame_training_data, videogame_training_data, boardgame_eval_comments, videogame_eval_comments):
     models_list = list()
     boardComments = utility.getRawComments(boardgame_training_data)
     videoComments = utility.getRawComments(videogame_training_data)
@@ -97,7 +100,7 @@ def run_model(model, optimalMinDiff, boardgame_training_data, videogame_training
 
     features = training.genFeatures(boardComments, bagOfWords) + training.genFeatures(videoComments, bagOfWords)
     model = training.trainModel(model, features, labels, bagOfWords)
-    evaluate_model(model, boardgame_development_comments, videogame_development_comments, bagOfWords)
+    evaluate_model(model, boardgame_eval_comments, videogame_eval_comments, bagOfWords)
 
 
 
@@ -110,11 +113,11 @@ def saveConfMatrices(lstConfMatrices, filename):
 given a model, boardgame development data, and videogame development data, evaluates the
 model
 """
-def evaluate_model(model, boardgame_development_data, videogame_development_data, bag_of_words_words):
-    cleaned_boardgame_comments = utility.getRawComments(boardgame_development_data)
-    cleaned_videogame_comments = utility.getRawComments(videogame_development_data)
+def evaluate_model(model, boardgame_eval_data, videogame_eval_data, bag_of_words_words):
+    cleaned_boardgame_comments = utility.getRawComments(boardgame_eval_data)
+    cleaned_videogame_comments = utility.getRawComments(videogame_eval_data)
     features = training.genFeatures(cleaned_boardgame_comments, bag_of_words_words) + training.genFeatures(cleaned_videogame_comments, bag_of_words_words)
-    actual_labels = training.genLabels("board", number_of_development_comments) + training.genLabels("video", number_of_development_comments)
+    actual_labels = training.genLabels("board", len(boardgame_eval_data)) + training.genLabels("video", len(videogame_eval_data))
 
     classifier_labels = model.predict(features)
     
@@ -124,6 +127,8 @@ def evaluate_model(model, boardgame_development_data, videogame_development_data
 
     video_conf = confusion_matrix("video",actual_labels, classifier_labels)
     board_conf = confusion_matrix("board",actual_labels, classifier_labels)
+   
+    print(video_conf, board_conf)
 
     video_recall = video_conf[0]/(video_conf[0] + video_conf[3])
     video_precision = video_conf[0]/(video_conf[0] + video_conf[2])
@@ -152,15 +157,27 @@ def calcAccuracy(confMatrix):
     return (confMatrix[0] + confMatrix[1])/(confMatrix[0] + confMatrix[1] + confMatrix[2] + confMatrix[3])
 
 def main():
+    commentType = input("evaluation on dev or test comments?\n")
+    if commentType != "dev" and commentType != "test":
+        print("enter either dev or test")
+        return
+    else:
+        if commentType == "dev":
+            commentsb = boardgame_development_comments    
+            commentsv = videogame_development_comments    
+        else:
+            commentsb = boardgame_testing_comments    
+            commentsv = videogame_testing_comments    
+
     modelName = input("svc or forest?\n").lower()
     if modelName != "svc" and modelName != "forest":
         print("not an appropriate model. Either svc or forest")
     elif modelName == "svc":
         model = training.newSVCModel()
-        run_model(model, optimalMinDiffSVC, boardgame_training_comments,videogame_training_comments)
+        run_model(model, optimalMinDiffSVC, boardgame_training_comments,videogame_training_comments, commentsb, commentsv)
     elif modelName == "forest":
         model = training.newRandomForestModel()
-        run_model(model, optimalMinDiffForest, boardgame_training_comments,videogame_training_comments)
+        run_model(model, optimalMinDiffForest, boardgame_training_comments,videogame_training_comments, commentsb, commentsv)
 
     #run_models(model, feature_words,boardgame_training_comments,videogame_training_comments)
 
