@@ -85,6 +85,10 @@ def avgNonEnglishWordsOrNumbers(englishDict, words):
         return num/len(words)
 
 
+"""
+uses nltk words to create an english dictionary dict datastructure
+@return dict structure
+"""
 def makeEnglishDict():
     english_vocab = set(w.lower() for w in corpus.words.words())
     englishDict = {}
@@ -93,9 +97,17 @@ def makeEnglishDict():
     return englishDict 
 
 
+
+"""
+checks if english word is in the english dictionary
+"""
 def isEnglishWord(englishDict, word):
     return word.lower() in englishDict
 
+
+"""
+checks if str is a number
+"""
 def is_number(s):
     try:
         float(s)
@@ -104,7 +116,9 @@ def is_number(s):
         return False
 
 
-
+"""
+returns raw comments from comment list
+"""
 def getRawComments(comments):
     raw = []
     for comment in comments:
@@ -112,6 +126,11 @@ def getRawComments(comments):
     return raw
 
 
+"""
+cleans comment: tokenizes, removes punctuation, removes stopwords
+@param: comment 
+@return: cleaned word list
+"""
 def cleanComment(comment: str):
     comment = comment.translate(str.maketrans('', '', string.punctuation))
     comment = comment.lower() # lower case
@@ -135,6 +154,10 @@ def cleanComment(comment: str):
     return words
     
 
+
+"""
+returns stemmed word list
+"""
 def stem_cleaned_comment(words):
     stemmer = SnowballStemmer("english")
     #applies the porter stemmer's stem function to the full list of words
@@ -142,6 +165,13 @@ def stem_cleaned_comment(words):
     return stemmed_comments
 
 
+
+"""
+calculates word frequencies for comments
+@param: comment objs
+@param: cleaningoperation
+@return: freq dict
+"""
 def wordFreq(commentObjs, cleaningOperation=cleanComment):
     freqDict = {}
     for commentObj in commentObjs:
