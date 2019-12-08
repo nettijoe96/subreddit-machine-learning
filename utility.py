@@ -50,7 +50,10 @@ def __load_pickled_data(num_items, pickle_file_name, start_index=0):
     
     return output
 
-
+"""
+given a list of elements, return a list for each possible subset for a set of 
+those elements
+"""
 def subsets(elements):
     sets = []
     for i in range(1, len(elements)+1):
@@ -66,6 +69,11 @@ def subsets(elements):
     return lsts
 
 
+"""
+given a list of words to check against and a list of words to evaluate, tell 
+whether the list being evaluated contains either a number or an element in the
+first list
+"""
 def allEnglishWordsOrNumbers(englishDict, words):
     for word in words:
         if not isEnglishWord(englishDict, word) and not is_number(word):
@@ -73,6 +81,10 @@ def allEnglishWordsOrNumbers(englishDict, words):
         
     return True
 
+"""
+given a list of words to check against and a list of words to evaluate, return 
+the number of matching words per total words (should be 1 or less)
+"""
 def avgNonEnglishWordsOrNumbers(englishDict, words):
     num = 0
     for word in words:
