@@ -13,6 +13,11 @@ englishDict = utility.makeEnglishDict()
 #some rudimentary feature selection stuff is below
 
 
+"""
+get wordcount differences between boardgames and videogames
+@param: minDiff is the minimum difference we care to return back
+@param: a sorted list of (word,diff) tuples
+"""
 def getWordDiffs(minDiff):
     boardComments = utility.load_boardgames(training)
     boardDict = utility.wordFreq(boardComments,cleaning_function)
@@ -35,7 +40,9 @@ def getWordDiffs(minDiff):
     return fullDiffSorted
 
 
-#top boardgames words that are different from videogames
+"""
+top boardgames words that are different from videogames
+"""
 def getBoardDifferences(diff, boardTup, videoDict):
     boardDiff = []
     for i in range(0, len(boardTup)):
@@ -50,7 +57,9 @@ def getBoardDifferences(diff, boardTup, videoDict):
     
     return boardDiff
 
-#top videogame words that are different from boardgames
+"""
+top videogame words that are different from boardgames
+"""
 def getVideoDifferences(diff, videoTup, boardDict):
 
     videoDiff = []
@@ -66,17 +75,26 @@ def getVideoDifferences(diff, videoTup, boardDict):
 
     return videoDiff
 
+"""
+clean and stem commment
+"""
 def cleaning_function(comment_text):
     cleaned_tokens = utility.cleanComment(comment_text)
     #return cleaned_tokens
     return utility.stem_cleaned_comment(cleaned_tokens)
     
+"""
+calculate average wordcount across comments
+"""
 def calc_avg_wordcount(comments_list):
     comment_bodies = list(map(lambda x: x.body,comments_list))
     tokenized_comments = list(map(utility.cleanComment,comment_bodies))
     wordcounts = list(map(len,tokenized_comments))
     return statistics.mean(wordcounts)
     
+"""
+calculate avg non-english words in comment list
+"""
 def calc_avg_non_english_words(comments_list):
     comment_bodies = list(map(lambda x: x.body,comments_list))
     commments = list(map(utility.cleanComment,comment_bodies))

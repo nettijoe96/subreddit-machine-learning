@@ -5,6 +5,12 @@ import evaluate
 filenameSVC = "confMatrixFile_svc.pickle"
 filenameForest = "confMatrixFile_Forest.pickle"
 
+
+"""
+extract data from confusion matrix datafile
+@param: filename
+@return: recall and precision for boardgames and videogames; x axis
+"""
 def extractData(filename):
     f = open(filename, "rb")
     lstConfMatrix = pickle.load(f)
